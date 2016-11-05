@@ -1,4 +1,7 @@
 class ProfilesController < ApplicationController
+  before_action :authenticate_user!
+  before_action :only_current_user
+
   def new
     # form where a user can fill out thair own profile.
     @user = User.find( params[:user_id] )
@@ -16,6 +19,18 @@ class ProfilesController < ApplicationController
       render action: :new
     end
   end
+  
+  def update
+    @user = User.find( params[:user_id] )
+    @profile = @user.profile
+    if @profile.update_attributes(profile_params)
+      flash[:success] = "Profile Updated!"
+      redirect_to user_path( params[:user_id] )
+    else
+      render action: :edit
+    end
+  end
+
   
   private
     def profile_params
